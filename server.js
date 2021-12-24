@@ -62,6 +62,30 @@ app.post("/signin", (req, res) => {
   }
 });
 
+app.post("/register", (req, res) => {
+  database.users.push({
+    email: req.body.email,
+    password: req.body.password,
+    FirstName: req.body.FirstName,
+    LastName: req.body.LastName,
+    Phone: req.body.Phone,
+    City: req.body.City,
+    ZipCode: req.body.ZipCode,
+    pet: req.body.pet,
+    name: req.body.name,
+    breed: req.body.breed,
+    birthDay: req.body.birthDay,
+    Gender: req.body.Gender,
+    neutered: req.body.neutered,
+    weight: req.body.weight,
+    vetname: req.body.vetname,
+    vetsPhoneNo: req.body.vetsPhoneNo,
+    vetsAddress: req.body.vetsAddress
+  });
+  res.json(database.users[database.users.length - 1]);
+});
+
+
 app.listen(3001, () => {
   console.log("App is working on port 3001");
 });
