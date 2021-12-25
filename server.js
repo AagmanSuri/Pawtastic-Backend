@@ -1,6 +1,7 @@
 const express = require("express");
 const bcrypt = require("bcrypt-nodejs");
-
+const mongoose = require("mongoose");
+const jwt = require("jsonwebtoken");
 const app = express();
 var cors = require("cors");
 
@@ -8,102 +9,108 @@ app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 app.use(cors());
 
-const database = {
-  users: [
-    {
-      email: "aagman@gmail.com",
-      password: "aagman",
-      FirstName: "Aagman",
-      LastName: "Suri",
-      Phone: "08899261987",
-      City: "Jammu",
-      ZipCode: "180005",
-      pet: "Cat",
-      name: "tyson",
-      breed: "spitz",
-      birthDay: "2021-12-01",
-      Gender: "Male",
-      neutered: "no",
-      weight: 7,
-      vetname: "suneet",
-      vetsPhoneNo: 12345678,
-      vetsAddress: "asdfghjkl;"
-    },
-    {
-      email: "aditya@gmail.com",
-      password: "aditya",
-      FirstName: "Aditya",
-      LastName: "Bhalaghare",
-      Phone: "08899261987",
-      City: "Pune",
-      ZipCode: "400077",
-      pet: "Cat",
-      name: "tyson",
-      breed: "spitz",
-      birthDay: "2021-12-01",
-      Gender: "Male",
-      neutered: "no",
-      weight: 7,
-      vetname: "suneet",
-      vetsPhoneNo: 12345678,
-      vetsAddress: "asdfghjkl;"
-    }
-  ]
-};
+//connection
+mongoose
+  .connect("mongodb://localhost:27017/Pawtastic", {
+    useNewUrlParser: true
+  })
+  .then(() => console.log("connection successful"))
+  .catch((err) => console.log(err));
+
+const userProfileSchema = new mongoose.Schema({
+  email: String,
+  password: String,
+  FirstName: String,
+  LastName: String,
+  Phone: Number,
+  City: String,
+  ZipCode: Number,
+  pet: String,
+  name: String,
+  breed: String,
+  birthDay: String,
+  Gender: String,
+  neutered: String,
+  weight: Number,
+  vetname: String,
+  vetsPhoneNo: Number,
+  vetsAddress: String
+});
+
+//collection creation
+const UserProfile = new mongoose.model("UserProfile", userProfileSchema);
 
 app.get("/", (req, res) => {
-  res.send(database.users);
+  res.send("Api is Working");
 });
 
 app.post("/signin", (req, res) => {
-  if (
-    req.body.email === database.users[0].email &&
-    req.body.password === database.users[0].password
-  ) {
-    res.json("success");
-  } else {
-    res.status(400).json("Error logging in");
-  }
+  const email = req.body.email;
+  const password = req.body.password;
+
+  UserProfile.findOne({ $or: [{ email: email }] }).then((user) => {
+    if (user) {
+      bcrypt.compare(password, user.password, function (err, result) {
+        if (err) {
+          res.json({
+            error: err
+          });
+        }
+        if (result) {
+          // let token = jwt.sign({ name: user.FirstName }, "verySecretValue", {
+          //   expiresIn: "1h"
+          // });
+          // res.json({
+          //   message: "Login Succesful",
+          //   token
+          // });
+          res.json("success");
+        } else {
+          res.json({
+            message: "Password does not matched!"
+          });
+        }
+      });
+    } else {
+      res.json({
+        message: "No user Found ! "
+      });
+    }
+  });
 });
 
 app.post("/register", (req, res) => {
   bcrypt.hash(req.body.password, null, null, function (err, hash) {
-    console.log(hash);
+    var myData = new UserProfile({
+      email: req.body.email,
+      password: hash,
+      FirstName: req.body.FirstName,
+      LastName: req.body.LastName,
+      Phone: req.body.Phone,
+      City: req.body.City,
+      ZipCode: req.body.ZipCode,
+      pet: req.body.pet,
+      name: req.body.name,
+      breed: req.body.breed,
+      birthDay: req.body.birthDay,
+      Gender: req.body.Gender,
+      neutered: req.body.neutered,
+      weight: req.body.weight,
+      vetname: req.body.vetname,
+      vetsPhoneNo: req.body.vetsPhoneNo,
+      vetsAddress: req.body.vetsAddress
+    });
+    myData
+      .save()
+      .then((item) => {
+        res.json(item);
+      })
+      .catch((err) => {
+        res.status(400).json("unable to save to database", err);
+      });
   });
-  database.users.push({
-    email: req.body.email,
-    password: req.body.password,
-    FirstName: req.body.FirstName,
-    LastName: req.body.LastName,
-    Phone: req.body.Phone,
-    City: req.body.City,
-    ZipCode: req.body.ZipCode,
-    pet: req.body.pet,
-    name: req.body.name,
-    breed: req.body.breed,
-    birthDay: req.body.birthDay,
-    Gender: req.body.Gender,
-    neutered: req.body.neutered,
-    weight: req.body.weight,
-    vetname: req.body.vetname,
-    vetsPhoneNo: req.body.vetsPhoneNo,
-    vetsAddress: req.body.vetsAddress
-  });
-  res.json(database.users[database.users.length - 1]);
 });
-
-// Load hash from your password DB.
-// bcrypt.compare("bacon", hash, function (err, res) {
-//   // res == true
-// });
-// bcrypt.compare("veggies", hash, function (err, res) {
-//   // res = false
-// });
 
 app.listen(3001, () => {
   console.log("App is working on port 3001");
 });
-
-// --> /signin --> Post = sucess/failure
-// --> /register --> Post = user
-// --> /Profile/:userId --> Get = user
