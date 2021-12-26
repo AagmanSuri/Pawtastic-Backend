@@ -47,7 +47,7 @@ app.get("/", async (req, res) => {
   // res.send("Api is Working");
   try {
     const dataItem = await UserProfile.find({});
-    res.status(200).send({
+    res.status(200).json({
       data: dataItem
     });
   } catch (err) {
