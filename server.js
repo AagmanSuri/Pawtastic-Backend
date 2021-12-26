@@ -2,16 +2,19 @@ const express = require("express");
 const bcrypt = require("bcrypt-nodejs");
 const mongoose = require("mongoose");
 const jwt = require("jsonwebtoken");
+const dotenv = require("dotenv");
+
 const app = express();
 var cors = require("cors");
-
+dotenv.config();
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 app.use(cors());
 
 //connection
+
 mongoose
-  .connect("mongodb://localhost:27017/Pawtastic", {
+  .connect(process.env.MongoDb_Url, {
     useNewUrlParser: true
   })
   .then(() => console.log("connection successful"))
@@ -111,6 +114,6 @@ app.post("/register", (req, res) => {
   });
 });
 
-app.listen(3001, () => {
+app.listen(process.env.PORT || 3001, () => {
   console.log("App is working on port 3001");
 });
