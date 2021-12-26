@@ -43,8 +43,16 @@ const userProfileSchema = new mongoose.Schema({
 //collection creation
 const UserProfile = new mongoose.model("UserProfile", userProfileSchema);
 
-app.get("/", (req, res) => {
-  res.send("Api is Working");
+app.get("/", async (req, res) => {
+  // res.send("Api is Working");
+  try {
+    const dataItem = await UserProfile.find({});
+    res.status(200).send({
+      data: dataItem
+    });
+  } catch (err) {
+    res.json({ data: `Some Problem with dataBase ${err}` });
+  }
 });
 
 app.post("/signin", (req, res) => {
