@@ -43,6 +43,21 @@ const userProfileSchema = new mongoose.Schema({
 //collection creation
 const UserProfile = new mongoose.model("UserProfile", userProfileSchema);
 
+//Service Db
+
+const serviceSchema = new mongoose.Schema({
+  messsage: String,
+  razorPayLink: String,
+  frequency: String,
+  start_Date: String,
+  days: Array,
+  Times: Array,
+  note_for_sitter: String
+});
+
+//collection creation
+const Service = new mongoose.model("Service", serviceSchema);
+
 app.get("/", async (req, res) => {
   // res.send("Api is Working");
   try {
@@ -129,6 +144,28 @@ app.post("/register", (req, res) => {
         res.status(400).json("unable to save to database", err);
       });
   });
+});
+
+app.post("/service", (req, res) => {
+  var myService = new Service({
+    messsage: req.body.messsage,
+    razorPayLink: req.body.razorPayLink,
+    frequency: req.body.frequency,
+    start_Date: req.body.start_Date,
+    days: req.body.days,
+    Times: req.body.Times,
+    note_for_sitter: req.body.note_for_sitter
+  });
+  myService
+    .save()
+    .then((item) => {
+      //res.send("Recieved");
+      res.json(item);
+    })
+    .catch((err) => {
+      res.status(400).json("unable to save to database", err);
+      // res.send(err);
+    });
 });
 
 app.listen(process.env.PORT || 3001, () => {
