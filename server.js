@@ -61,7 +61,7 @@ app.post("/signin", (req, res) => {
 
   UserProfile.findOne({ $or: [{ email: email }] }).then((user) => {
     if (user) {
-      bcrypt.compare(password, user.password, function (err, result) {
+      bcrypt.compare(password, user.password, async function (err, result) {
         if (err) {
           res.json({
             error: err
@@ -75,7 +75,16 @@ app.post("/signin", (req, res) => {
           //   message: "Login Succesful",
           //   token
           // });
-          res.json("success");
+          try {
+            const dataItem = await UserProfile.find({ email: req.body.email });
+            res.status(200).json({
+              message: "success",
+              data: dataItem
+            });
+          } catch (err) {
+            res.json({ message: `Some Problem with dataBase ${err}` });
+          }
+          // res.json("success");
         } else {
           res.json({
             message: "Password does not matched!"
