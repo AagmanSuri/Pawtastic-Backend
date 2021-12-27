@@ -46,6 +46,7 @@ const UserProfile = new mongoose.model("UserProfile", userProfileSchema);
 //Service Db
 
 const serviceSchema = new mongoose.Schema({
+  email: String,
   messsage: String,
   razorPayLink: String,
   frequency: String,
@@ -148,6 +149,7 @@ app.post("/register", (req, res) => {
 
 app.post("/service", (req, res) => {
   var myService = new Service({
+    email: req.body.email,
     messsage: req.body.messsage,
     razorPayLink: req.body.razorPayLink,
     frequency: req.body.frequency,
