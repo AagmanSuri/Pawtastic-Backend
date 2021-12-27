@@ -170,6 +170,25 @@ app.post("/service", (req, res) => {
     });
 });
 
+app.post("/getService", (req, res) => {
+  const email = req.body.email;
+  Service.find({ $or: [{ email: email }] }).then(async (user) => {
+    if (user) {
+      try {
+        res.status(200).json({
+          user
+        });
+      } catch (err) {
+        res.json({ message: `Some Problem with dataBase ${err}` });
+      }
+    } else {
+      res.json({
+        message: "No user Found ! "
+      });
+    }
+  });
+});
+
 app.listen(process.env.PORT || 3001, () => {
   console.log("App is working on port 3001");
 });
