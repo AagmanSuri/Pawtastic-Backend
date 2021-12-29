@@ -50,6 +50,29 @@ Request to be sent
 "password":"aagman"
 }
 ```
+For registering a User (Post) https://mernpawtastic.herokuapp.com/register
+```
+{
+
+"email":"",
+"password":"",
+"FirstName":"",
+"LastName":"",
+"Phone":"",
+"City":"",
+"ZipCode":"",
+"pet":"",
+"name":"",
+"breed":"",
+"birthDay":"",
+"Gender":"",
+"neutered":"",
+"weight":,
+"vetname":"",
+"vetsPhoneNo":,
+"vetsAddress":""
+}
+```
 
 For Storing Service Request (Post) https://mernpawtastic.herokuapp.com/service <br>
 Request to be sent 
