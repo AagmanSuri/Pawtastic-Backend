@@ -98,10 +98,3 @@ Request to be sent
 
 
 
-
-
-
-
-## Contributors
-1. Aagman Suri - 1911066
-2. Aditya Bhaleghare - 1911068
